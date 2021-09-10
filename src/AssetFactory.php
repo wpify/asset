@@ -3,6 +3,10 @@
 namespace Wpify\Asset;
 
 class AssetFactory {
+	public function admin_wp_script( string $asset_path, array $args = array() ): Asset {
+		return $this->wp_script( $asset_path, array_merge( $args, array( 'is_admin' => true ) ) );
+	}
+
 	public function wp_script( string $asset_path, array $args = array() ): Asset {
 		$asset_base  = pathinfo( $asset_path, PATHINFO_FILENAME );
 		$build_path  = pathinfo( $asset_path, PATHINFO_DIRNAME );
@@ -36,10 +40,26 @@ class AssetFactory {
 		return new Asset( $args );
 	}
 
+	public function login_wp_script( string $asset_path, array $args = array() ): Asset {
+		return $this->wp_script( $asset_path, array_merge( $args, array( 'is_login' => true ) ) );
+	}
+
+	public function admin_url( string $asset_path, array $args = array() ): Asset {
+		return $this->url( $asset_path, array_merge( $args, array( 'is_admin' => true ) ) );
+	}
+
 	public function url( string $src, array $args = array() ): Asset {
 		$args = array_merge( $args, array( 'src' => $src ) );
 
 		return new Asset( $args );
+	}
+
+	public function login_url( string $asset_path, array $args = array() ): Asset {
+		return $this->url( $asset_path, array_merge( $args, array( 'is_login' => true ) ) );
+	}
+
+	public function admin_theme( string $asset_path, array $args = array() ): Asset {
+		return $this->theme( $asset_path, array_merge( $args, array( 'is_admin' => true ) ) );
 	}
 
 	public function theme( string $path, array $args = array() ): Asset {
@@ -48,9 +68,21 @@ class AssetFactory {
 		return new Asset( $args );
 	}
 
+	public function login_theme( string $asset_path, array $args = array() ): Asset {
+		return $this->theme( $asset_path, array_merge( $args, array( 'is_login' => true ) ) );
+	}
+
+	public function admin_parent_theme( string $asset_path, array $args = array() ): Asset {
+		return $this->parent_theme( $asset_path, array_merge( $args, array( 'is_admin' => true ) ) );
+	}
+
 	public function parent_theme( string $path, array $args = array() ): Asset {
 		$args['src'] = wp_normalize_path( get_template_directory_uri() . '/' . $path );
 
 		return new Asset( $args );
+	}
+
+	public function login_parent_theme( string $asset_path, array $args = array() ): Asset {
+		return $this->parent_theme( $asset_path, array_merge( $args, array( 'is_login' => true ) ) );
 	}
 }
