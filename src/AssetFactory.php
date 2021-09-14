@@ -3,11 +3,16 @@
 namespace Wpify\Asset;
 
 class AssetFactory {
-	public function admin_wp_script( string $asset_path, array $args = array() ): Asset {
-		return $this->wp_script( $asset_path, array_merge( $args, array( 'is_admin' => true ) ) );
+	public function admin_wp_script( string $asset_path, $args = null ): Asset {
+		$config = new AssetConfig( $args );
+
+		$config->set_is_admin( true );
+
+		return $this->wp_script( $asset_path, $config );
 	}
 
-	public function wp_script( string $asset_path, array $args = array() ): Asset {
+	public function wp_script( string $asset_path, $args = null ): Asset {
+		$config      = new AssetConfig( $args );
 		$asset_base  = pathinfo( $asset_path, PATHINFO_FILENAME );
 		$build_path  = pathinfo( $asset_path, PATHINFO_DIRNAME );
 		$asset_info  = wp_normalize_path( $build_path . '/' . $asset_base . '.asset.php' );
@@ -16,73 +21,121 @@ class AssetFactory {
 		$filename    = $asset_base . '.' . $extension;
 
 		if ( file_exists( $asset_path ) ) {
-			$args['src'] = str_replace( WP_CONTENT_DIR, content_url(), $asset_path );
+			$config->set_src( str_replace( WP_CONTENT_DIR, content_url(), $asset_path ) );
 		}
 
-		if ( file_exists( $asset_info ) && $extension === 'js' ) {
-			$info                 = require $asset_info;
-			$dependencies         = $args['dependencies'] ?? array();
-			$info['dependencies'] = array_unique( array_merge( $dependencies, $info['dependencies'] ) );
-			$args                 = array_merge( $info, $args );
+		if ( file_exists( $asset_info ) && $config->get_type() === AssetConfigInterface::TYPE_SCRIPT ) {
+			$info = require $asset_info;
+
+			$config->set_version( $info['version'] ?? $config->get_version() );
+			$config->set_dependencies(
+				array_unique(
+					array_merge(
+						$config->get_dependencies(),
+						$info['dependencies'] ?? array()
+					)
+				)
+			);
 		}
 
-		if ( file_exists( $assets_info ) && $extension === 'js' ) {
+		if ( file_exists( $assets_info ) && $config->get_type() === AssetConfigInterface::TYPE_SCRIPT ) {
 			$infos = require $assets_info;
 
 			if ( ! empty( $infos[ $filename ] ) ) {
-				$info                 = $infos[ $filename ];
-				$dependencies         = $args['dependencies'] ?? array();
-				$info['dependencies'] = array_unique( array_merge( $dependencies, $info['dependencies'] ) );
-				$args                 = array_merge( $info, $args );
+				$info = $infos[ $filename ];
+
+				$config->set_version( $info['version'] ?? $config->get_version() );
+				$config->set_dependencies(
+					array_unique(
+						array_merge(
+							$config->get_dependencies(),
+							$info['dependencies'] ?? array()
+						)
+					)
+				);
 			}
 		}
 
-		return new Asset( $args );
+		return new Asset( $config );
 	}
 
-	public function login_wp_script( string $asset_path, array $args = array() ): Asset {
-		return $this->wp_script( $asset_path, array_merge( $args, array( 'is_login' => true ) ) );
+	public function login_wp_script( string $asset_path, $args = null ): Asset {
+		$config = new AssetConfig( $args );
+
+		$config->set_is_login( true );
+
+		return $this->wp_script( $asset_path, $config );
 	}
 
-	public function admin_url( string $asset_path, array $args = array() ): Asset {
-		return $this->url( $asset_path, array_merge( $args, array( 'is_admin' => true ) ) );
+	public function admin_url( string $src, $args = null ): Asset {
+		$config = new AssetConfig( $args );
+
+		$config->set_is_admin( true );
+
+		return $this->url( $src, $config );
 	}
 
-	public function url( string $src, array $args = array() ): Asset {
-		$args = array_merge( $args, array( 'src' => $src ) );
+	public function url( string $src, $args = null ): Asset {
+		$config = new AssetConfig( $args );
 
-		return new Asset( $args );
+		$config->set_src( $src );
+
+		return new Asset( $config );
 	}
 
-	public function login_url( string $asset_path, array $args = array() ): Asset {
-		return $this->url( $asset_path, array_merge( $args, array( 'is_login' => true ) ) );
+	public function login_url( string $src, $args = null ): Asset {
+		$config = new AssetConfig( $args );
+
+		$config->set_is_login( true );
+
+		return $this->url( $src, $config );
 	}
 
-	public function admin_theme( string $asset_path, array $args = array() ): Asset {
-		return $this->theme( $asset_path, array_merge( $args, array( 'is_admin' => true ) ) );
+	public function admin_theme( string $asset_path, $args = null ): Asset {
+		$config = new AssetConfig( $args );
+
+		$config->set_is_admin( true );
+
+		return $this->theme( $asset_path, $config );
 	}
 
-	public function theme( string $path, array $args = array() ): Asset {
-		$args['src'] = get_theme_file_uri( $path );
+	public function theme( string $path, $args = null ): Asset {
+		$config = new AssetConfig( $args );
 
-		return new Asset( $args );
+		$config->set_src( get_theme_file_uri( $path ) );
+
+		return new Asset( $config );
 	}
 
-	public function login_theme( string $asset_path, array $args = array() ): Asset {
-		return $this->theme( $asset_path, array_merge( $args, array( 'is_login' => true ) ) );
+	public function login_theme( string $asset_path, $args = null ): Asset {
+		$config = new AssetConfig( $args );
+
+		$config->set_is_login( true );
+
+		return $this->theme( $asset_path, $config );
 	}
 
-	public function admin_parent_theme( string $asset_path, array $args = array() ): Asset {
-		return $this->parent_theme( $asset_path, array_merge( $args, array( 'is_admin' => true ) ) );
+	public function admin_parent_theme( string $asset_path, $args = null ): Asset {
+		$config = new AssetConfig( $args );
+
+		$config->set_is_admin( true );
+
+		return $this->parent_theme( $asset_path, $config );
 	}
 
-	public function parent_theme( string $path, array $args = array() ): Asset {
-		$args['src'] = wp_normalize_path( get_template_directory_uri() . '/' . $path );
+	public function parent_theme( string $path, $args = null ): Asset {
+		$config = new AssetConfig( $args );
 
-		return new Asset( $args );
+		$config->set_src( wp_normalize_path( get_template_directory_uri() . '/' . $path ) );
+
+		return new Asset( $config );
 	}
 
-	public function login_parent_theme( string $asset_path, array $args = array() ): Asset {
-		return $this->parent_theme( $asset_path, array_merge( $args, array( 'is_login' => true ) ) );
+	public function login_parent_theme( string $asset_path, $args = null ): Asset {
+		$config = new AssetConfig( $args );
+
+		$config->set_is_login( true );
+
+		return $this->parent_theme( $asset_path, $config );
 	}
 }
