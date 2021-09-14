@@ -1,4 +1,4 @@
-# WPify Taxonomy
+# WPify Asset
 
 Abstraction over WordPress Asset.
 
