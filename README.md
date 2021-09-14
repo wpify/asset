@@ -63,8 +63,7 @@ $style_config->set_src( plugins_url( 'style.css', __FILE__ ) )
              ->set_do_enqueue( '__return_true' )
              ->set_version( '1.0.0' )
              ->set_media( 'all' );
-
-$style = new Asset( $config );
+$style = new Asset( $style_config );
 
 $script_config = new AssetConfig( $args );
 $script_config->set_src( plugins_url( 'script.js', __FILE__ ) )
@@ -80,4 +79,5 @@ $script_config->set_src( plugins_url( 'script.js', __FILE__ ) )
               ->set_script_after( 'console.log( "Script after!" );' )
               ->set_text_domain( 'my-plugin-text-domain' )
               ->set_translations_path( plugin_dir_path( __FILE__ ) . 'languages' );
+$script = new Asset( $script_config );
 ```
