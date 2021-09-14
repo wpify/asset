@@ -6,7 +6,7 @@ Abstraction over WordPress Asset.
 
 `composer require wpify/asset`
 
-## Usage with factory
+## Usage
 
 ```php
 use Wpify\Asset\AssetFactory;
