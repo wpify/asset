@@ -166,6 +166,12 @@ class AssetConfig implements AssetConfigInterface {
 		return $this;
 	}
 
+	public function merge_dependencies( array $dependencies = array() ): AssetConfigInterface {
+		$this->dependencies = array_unique( array_merge( $this->dependencies, $dependencies ) );
+
+		return $this;
+	}
+
 	public function get_version(): ?string {
 		return $this->version;
 	}
