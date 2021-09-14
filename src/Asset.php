@@ -75,31 +75,13 @@ class Asset {
 	}
 
 	public function enqueue() {
-		if ( call_user_func( $this->config->get_do_enqueue(), $this->get_args() ) && ! $this->is_done ) {
+		if ( call_user_func( $this->config->get_do_enqueue(), $this->config ) && ! $this->is_done ) {
 			if ( $this->config->get_type() === AssetConfigInterface::TYPE_SCRIPT ) {
 				wp_enqueue_script( $this->config->get_handle() );
 			} elseif ( $this->config->get_type() === AssetConfigInterface::TYPE_STYLE ) {
 				wp_enqueue_style( $this->config->get_handle() );
 			}
 		}
-	}
-
-	private function get_args() {
-		return array(
-			'is_admin'   => $this->config->get_is_admin(),
-			'is_login'   => $this->config->get_is_login(),
-			'do_enqueue' => $this->config->get_do_enqueue(),
-			'handle'     => $this->config->get_handle(),
-			'src'        => $this->config->get_src(),
-			'deps'       => $this->config->get_dependencies(),
-			'ver'        => $this->config->get_version(),
-			'in_footer'  => $this->config->get_in_footer(),
-			'type'       => $this->config->get_type(),
-		);
-	}
-
-	public function get_handle() {
-		return $this->config->get_handle();
 	}
 
 	public function print() {
@@ -114,5 +96,17 @@ class Asset {
 				}
 			}
 		}
+	}
+
+	public function get_config(): AssetConfigInterface {
+		return $this->config;
+	}
+
+	public function set_config( AssetConfigInterface $config ): void {
+		$this->config = $config;
+	}
+
+	public function get_is_done(): bool {
+		return $this->is_done;
 	}
 }
