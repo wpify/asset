@@ -41,7 +41,7 @@ interface AssetConfigInterface {
 
 	public function set_in_footer( bool $in_footer ): self;
 
-	public function get_type(): string;
+	public function get_type(): ?string;
 
 	public function set_type( string $type ): self;
 

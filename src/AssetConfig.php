@@ -221,7 +221,7 @@ class AssetConfig implements AssetConfigInterface {
 		return $this;
 	}
 
-	public function get_type(): string {
+	public function get_type(): ?string {
 		return $this->type;
 	}
 
