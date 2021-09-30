@@ -3,10 +3,10 @@
 namespace Wpify\Asset;
 
 class AssetConfig implements AssetConfigInterface {
-	/** @var boolean */
+	/** @var bool */
 	private $is_admin = false;
 
-	/** @var boolean */
+	/** @var bool */
 	private $is_login = false;
 
 	/** @var callable */
@@ -33,8 +33,8 @@ class AssetConfig implements AssetConfigInterface {
 	/** @var ?string */
 	private $media;
 
-	/** @var array */
-	private $variables = array();
+	/** @var array|callable */
+	private $variables;
 
 	/** @var string */
 	private $script_before;
@@ -48,6 +48,9 @@ class AssetConfig implements AssetConfigInterface {
 	/** @var string */
 	private $translations_path;
 
+	/** @var bool */
+	private $auto_register = true;
+
 	/**
 	 * Creates a configuration object
 	 *
@@ -56,6 +59,10 @@ class AssetConfig implements AssetConfigInterface {
 	public function __construct( $args = null ) {
 		if ( is_array( $args ) ) {
 			$args = (object) $args;
+		}
+
+		if ( $args instanceof AssetConfigInterface ) {
+			$args = $args->get_config_object();
 		}
 
 		if ( is_object( $args ) ) {
@@ -79,7 +86,29 @@ class AssetConfig implements AssetConfigInterface {
 			$this->script_after      = $args->script_after ?? $this->script_after;
 			$this->text_domain       = $args->text_domain ?? $this->text_domain;
 			$this->translations_path = $args->translations_path ?? $this->translations_path;
+			$this->auto_register     = $args->auto_register ?? $this->auto_register;
 		}
+	}
+
+	public function get_config_object(): object {
+		return (object) array(
+			'is_admin'          => $this->is_admin,
+			'is_login'          => $this->is_login,
+			'do_enqueue'        => $this->do_enqueue,
+			'handle'            => $this->handle,
+			'src'               => $this->src,
+			'dependencies'      => $this->dependencies,
+			'version'           => $this->version,
+			'in_footer'         => $this->in_footer,
+			'type'              => $this->type,
+			'media'             => $this->media,
+			'variables'         => $this->variables,
+			'script_before'     => $this->script_before,
+			'script_after'      => $this->script_after,
+			'text_domain'       => $this->text_domain,
+			'translations_path' => $this->translations_path,
+			'auto_register'     => $this->auto_register,
+		);
 	}
 
 	private function generate_handle( $src ): string {
@@ -212,11 +241,11 @@ class AssetConfig implements AssetConfigInterface {
 		return $this;
 	}
 
-	public function get_variables(): array {
+	public function get_variables() {
 		return $this->variables;
 	}
 
-	public function set_variables( array $variables ): AssetConfigInterface {
+	public function set_variables( $variables ): AssetConfigInterface {
 		$this->variables = $variables;
 
 		return $this;
@@ -258,6 +287,16 @@ class AssetConfig implements AssetConfigInterface {
 
 	public function set_translations_path( string $translations_path ): AssetConfigInterface {
 		$this->translations_path = $translations_path;
+
+		return $this;
+	}
+
+	public function get_auto_register(): bool {
+		return $this->auto_register;
+	}
+
+	public function set_auto_register( bool $auto_register ): AssetConfigInterface {
+		$this->auto_register = $auto_register;
 
 		return $this;
 	}

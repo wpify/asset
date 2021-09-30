@@ -7,6 +7,8 @@ interface AssetConfigInterface {
 
 	const TYPE_STYLE = 'style';
 
+	public function get_config_object(): object;
+
 	public function get_is_admin(): bool;
 
 	public function set_is_admin( bool $is_admin ): self;
@@ -47,9 +49,9 @@ interface AssetConfigInterface {
 
 	public function set_media( string $media ): self;
 
-	public function get_variables(): array;
+	public function get_variables();
 
-	public function set_variables( array $variables ): self;
+	public function set_variables( $variables ): self;
 
 	public function get_script_before(): ?string;
 
@@ -66,4 +68,8 @@ interface AssetConfigInterface {
 	public function get_translations_path(): ?string;
 
 	public function set_translations_path( string $translations_path ): self;
+
+	public function get_auto_register(): bool;
+
+	public function set_auto_register( bool $auto_register ): self;
 }
