@@ -22,21 +22,21 @@ class Asset {
 	public function init() {
 		if ( $this->config->get_auto_register() ) {
 			if ( $this->config->get_is_login() ) {
-				if ( did_action( 'login_enqueue_scripts' ) ) {
+				if ( did_action( 'login_enqueue_scripts' ) || doing_action( 'login_enqueue_scripts' ) ) {
 					$this->register();
 				} else {
 					add_action( 'login_enqueue_scripts', array( $this, 'register' ) );
 					add_action( 'login_enqueue_scripts', array( $this, 'enqueue' ), 20 );
 				}
 			} elseif ( $this->config->get_is_admin() ) {
-				if ( did_action( 'admin_enqueue_scripts' ) ) {
+				if ( did_action( 'admin_enqueue_scripts' ) || doing_action( 'admin_enqueue_scripts' ) ) {
 					$this->register();
 				} else {
 					add_action( 'admin_enqueue_scripts', array( $this, 'register' ) );
 					add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ), 20 );
 				}
 			} else {
-				if ( did_action( 'wp_enqueue_scripts' ) ) {
+				if ( did_action( 'wp_enqueue_scripts' ) || doing_action( 'wp_enqueue_scripts' ) ) {
 					$this->register();
 				} else {
 					add_action( 'wp_enqueue_scripts', array( $this, 'register' ) );
