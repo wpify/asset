@@ -53,20 +53,6 @@ class AssetFactory {
 			}
 		}
 
-		if ( file_exists( $assets_info ) ) {
-			$infos = require $assets_info;
-
-			if ( ! empty( $infos[ $filename ] ) ) {
-				$info = $infos[ $filename ];
-
-				$config->set_version( $info['version'] ?? $config->get_version() );
-
-				if ( $config->get_type() === AssetConfigInterface::TYPE_SCRIPT ) {
-					$config->merge_dependencies( $info['dependencies'] ?? array() );
-				}
-			}
-		}
-
 		return $this->factory( $config );
 	}
 
