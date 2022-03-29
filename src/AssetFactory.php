@@ -24,21 +24,27 @@ class AssetFactory {
 			$config->set_src( str_replace( WP_CONTENT_DIR, content_url(), $asset_path ) );
 		}
 
-		if ( file_exists( $asset_info ) && $config->get_type() === AssetConfigInterface::TYPE_SCRIPT ) {
+		if ( file_exists( $asset_info ) ) {
 			$info = require $asset_info;
 
 			$config->set_version( $info['version'] ?? $config->get_version() );
-			$config->merge_dependencies( $info['dependencies'] ?? array() );
+
+			if ( $config->get_type() === AssetConfigInterface::TYPE_SCRIPT ) {
+				$config->merge_dependencies( $info['dependencies'] ?? array() );
+			}
 		}
 
-		if ( file_exists( $assets_info ) && $config->get_type() === AssetConfigInterface::TYPE_SCRIPT ) {
+		if ( file_exists( $assets_info ) ) {
 			$infos = require $assets_info;
 
 			if ( ! empty( $infos[ $filename ] ) ) {
 				$info = $infos[ $filename ];
 
 				$config->set_version( $info['version'] ?? $config->get_version() );
-				$config->merge_dependencies( $info['dependencies'] ?? array() );
+
+				if ( $config->get_type() === AssetConfigInterface::TYPE_SCRIPT ) {
+					$config->merge_dependencies( $info['dependencies'] ?? array() );
+				}
 			}
 		}
 
