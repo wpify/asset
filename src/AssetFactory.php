@@ -25,7 +25,14 @@ class AssetFactory {
 		}
 
 		if ( file_exists( $asset_path ) ) {
-			$config->set_src( str_replace( WP_CONTENT_DIR, content_url(), $asset_path ) );
+			$content_url = content_url();
+
+			if ( is_multisite() && ! is_main_site() ) {
+				$content_url = str_replace( get_home_url( get_site( get_main_site_id() )->blog_id ), get_home_url(), $content_url );
+				dump( array( $asset_path => $content_url ) );
+			}
+
+			$config->set_src( str_replace( WP_CONTENT_DIR, $content_url, $asset_path ) );
 		}
 
 		$info = null;
