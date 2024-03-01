@@ -13,21 +13,23 @@ class AssetFactory {
 
 	public function wp_script( string $asset_path, $args = null ): Asset {
 		$config      = new AssetConfig( $args );
+		$asset_path  = $this->normalize_path( $asset_path );
 		$asset_base  = pathinfo( $asset_path, PATHINFO_FILENAME );
 		$build_path  = pathinfo( $asset_path, PATHINFO_DIRNAME );
-		$assets_info = wp_normalize_path( $build_path . '/assets.php' );
+		$assets_info = $this->normalize_path( $build_path . '/assets.php' );
 		$extension   = current( explode( '?', pathinfo( $asset_path, PATHINFO_EXTENSION ) ) );
 		$filename    = $asset_base . '.' . $extension;
-		$asset_info  = array( wp_normalize_path( $build_path . '/' . $asset_base . '.asset.php' ) );
+		$asset_info  = array( $this->normalize_path( $build_path . '/' . $asset_base . '.asset.php' ) );
 
 		if ( AssetConfigInterface::TYPE_STYLE ) {
-			$asset_info[] = preg_replace( '/style-(\S+?)\.css$/', '$1.asset.php', $asset_path );
+			$asset_info[] = $this->normalize_path( preg_replace( '/style-(\S+?)\.css$/', '$1.asset.php', $asset_path ) );
 		}
 
 		if ( file_exists( $asset_path ) ) {
 			$content_url = content_url();
+			$content_dir = $this->normalize_path( WP_CONTENT_DIR );
 
-			$config->set_src( str_replace( WP_CONTENT_DIR, $content_url, $asset_path ) );
+			$config->set_src( $this->normalize_url( str_replace( $content_dir, $content_url, $asset_path ) ) );
 		}
 
 		$info = null;
@@ -56,6 +58,14 @@ class AssetFactory {
 		}
 
 		return $this->factory( $config );
+	}
+
+	private function normalize_path( string $path ) {
+		return str_replace( '/', DIRECTORY_SEPARATOR, wp_normalize_path( $path ) );
+	}
+
+	private function normalize_url( string $url ) {
+		return str_replace( '\\', '/', $url );
 	}
 
 	public function factory( AssetConfigInterface $config ) {
@@ -124,7 +134,7 @@ class AssetFactory {
 	public function parent_theme( string $path, $args = null ): Asset {
 		return $this->factory(
 			( new AssetConfig( $args ) )
-				->set_src( wp_normalize_path( get_template_directory_uri() . '/' . $path ) )
+				->set_src( $this->normalize_url( get_template_directory_uri() . '/' . $path ) )
 		);
 	}
 
