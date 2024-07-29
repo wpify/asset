@@ -51,6 +51,9 @@ class AssetConfig implements AssetConfigInterface {
 	/** @var bool */
 	private $auto_register = true;
 
+	/** @var ?string */
+	private $strategy = null;
+
 	/**
 	 * Creates a configuration object
 	 *
@@ -87,6 +90,7 @@ class AssetConfig implements AssetConfigInterface {
 			$this->text_domain       = $args->text_domain ?? $this->text_domain;
 			$this->translations_path = $args->translations_path ?? $this->translations_path;
 			$this->auto_register     = $args->auto_register ?? $this->auto_register;
+			$this->strategy          = $args->strategy ?? $this->strategy;
 		}
 	}
 
@@ -108,6 +112,7 @@ class AssetConfig implements AssetConfigInterface {
 			'text_domain'       => $this->text_domain,
 			'translations_path' => $this->translations_path,
 			'auto_register'     => $this->auto_register,
+			'strategy'          => $this->strategy,
 		);
 	}
 
@@ -297,6 +302,16 @@ class AssetConfig implements AssetConfigInterface {
 
 	public function set_auto_register( bool $auto_register ): AssetConfigInterface {
 		$this->auto_register = $auto_register;
+
+		return $this;
+	}
+
+	public function get_strategy(): ?string {
+		return $this->strategy;
+	}
+
+	public function set_strategy( ?string $strategy ): AssetConfigInterface {
+		$this->strategy = $strategy;
 
 		return $this;
 	}

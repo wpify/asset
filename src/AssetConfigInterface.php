@@ -72,4 +72,8 @@ interface AssetConfigInterface {
 	public function get_auto_register(): bool;
 
 	public function set_auto_register( bool $auto_register ): self;
+
+	public function get_strategy(): ?string;
+
+	public function set_strategy( string $strategy ): self;
 }

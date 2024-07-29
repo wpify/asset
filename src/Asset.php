@@ -51,7 +51,22 @@ class Asset {
 
 	public function register() {
 		if ( $this->config->get_type() === AssetConfigInterface::TYPE_SCRIPT ) {
-			$this->is_registered = wp_register_script( $this->config->get_handle(), $this->config->get_src(), $this->config->get_dependencies(), $this->config->get_version(), $this->config->get_in_footer() );
+			$args = $this->config->get_in_footer();
+
+			if ( ! empty( $this->config->get_strategy() ) ) {
+				$args = array(
+					'in_footer' => $this->config->get_in_footer(),
+					'strategy'  => $this->config->get_strategy(),
+				);
+			}
+
+			$this->is_registered = wp_register_script(
+				$this->config->get_handle(),
+				$this->config->get_src(),
+				$this->config->get_dependencies(),
+				$this->config->get_version(),
+				$args
+			);
 
 			if ( ! empty( $this->config->get_variables() ) ) {
 				$variables = $this->config->get_variables();
